@@ -1,0 +1,117 @@
+<html>
+<title>doc registration</title>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+<style>
+    .form-control {
+        border: 1px solid black;
+        border-radius: 10px;
+    }
+</style>
+
+<body><br><br>
+<form onsubmit="addRemedies()">
+    <center>
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4"><label style="color:purple"><strong><u>Add home Remedies</u></strong></label></div>
+            <div class="col-md-4"></div>
+        </div><br>
+        <div class="row">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-2"><label for="">Problem:</label></div>
+            <div class="col-sm-3"><input type="text-area" class="form-control" id="Problem" required placeholder="enter your Problem"></div>
+            <div class="col-sm-4"></div>
+          </div><br>
+          <div class="row">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-2"><label for="">Ingredients:</label></div>
+            <div class="col-sm-3"><input type="text-area" class="form-control" required id="Ingredients" name="Ingredients" placeholder="enter your Ingredients"></div>
+            <div class="col-sm-4"></div>
+          </div><br>  
+          <div class="row">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-2"><label for="">Procedure:</label></div>
+            <div class="col-sm-3"><input type="text-area" class="form-control" required id="Procedure" name="Procedure"  placeholder="enter your Procedure"></div>
+            <div class="col-sm-4"></div>
+          </div><br>
+          <div class="row">
+            <div class="col-sm-3"></div>
+            <div class="col-sm-2"><label for="">Precautions:</label></div>
+            <div class="col-sm-3"><input type="text-area" class="form-control" required id="Precautions" name="Precautions" placeholder="enter your Precautions"></div>
+            <div class="col-sm-4"></div>
+          </div><br>
+          
+          <div class="row">
+            <div class="col-sm-4"></div>
+            <div class="col-md-4"><button type="submit" id="submit" 
+                    class="btn btn-success">Add</button></div>&nbsp;
+          
+            <div class="col-md-4"></div>
+        </div><br><br>
+
+    </center>
+	</form>
+</body>
+
+</html>
+<script>
+
+    function performAjax(httpMethod, url, params) {
+        const myPromise = new Promise((resolve, reject) => {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve(this.responseText);
+                }
+                if (this.status == 500) {
+                    reject({ error: true, message: "ServerError" });
+                }
+                if (this.status == 404) {
+                    reject({ error: true, message: "Resource not found" });
+                }
+            };
+            xhttp.open(httpMethod, url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            params ? xhttp.send(params) : xhttp.send();
+        });
+        return myPromise;
+    }
+
+    function addRemedies() {
+        event.preventDefault();
+        const Problem = document.getElementById("Problem").value;
+        const Precautions = document.getElementById("Precautions").value;
+        const Ingredients = document.getElementById("Ingredients").value;
+        const Procedure = document.getElementById("Procedure").value;
+        const addDoctorPromise = performAjax(
+            "POST",
+            "http://localhost:4000/Doctor/addremedies",
+            JSON.stringify({ Problem,Ingredients,Procedure,Precautions})
+        );
+        addDoctorPromise
+            .then(newDoctorsList => {
+                alert("succefully added");
+                cancel();
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+
+    function cancel() {
+        event.preventDefault();
+        document.getElementById("Problem").value="";
+       document.getElementById("Precautions").value="";
+       document.getElementById("Ingredients").value="";
+       document.getElementById("Procedure").value="";
+    }
+
+</script>

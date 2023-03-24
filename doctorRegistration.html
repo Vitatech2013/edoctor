@@ -1,0 +1,185 @@
+<html>
+<title>doc registration</title>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+<style>
+    .form-control {
+        border: 1px solid black;
+        border-radius: 10px;
+    }
+</style>
+
+<body onload="loadData()"><br><br>
+    <form onsubmit="doctorRegistration()">
+        <center>
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-4"><label style="color:purple"><strong><u>DOCTOR REGISTRATION</u></strong></label>
+                </div>
+                <div class="col-md-4"></div>
+            </div><br>
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-3"><label for="">Enter name</label><input type="text" class="form-control"
+                        name="dname" id="dname" placeholder="enter name" required></div>
+                <div class="col-md-3"><label for="">Father name</label><input type="text" class="form-control"
+                        name="dfathername" id="dfathername" placeholder="enter father name" required></div>
+                <div class="col-md-3"><label for="">Phone number</label><input type="text" class="form-control"
+                        placeholder="enter your phone number" id="dphone" maxlength="10" required
+                        pattern="[6-9]{1}[0-9]{9}"></div>
+            </div><br>
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-3"><label for="">Email id</label><input type="text" class="form-control"
+                        name="demailid" id="demailid" placeholder="enter email id" required
+                        pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"></div>
+                <div class="col-md-3"><label for="">Password</label><input type="Password" class="form-control"
+                        id="dpassword" name="password" required></div>
+                <div class="col-md-3"><label for="">Date of Joining</label><input type="date" class="form-control"
+                        required name="date" id="ddoj">
+                </div>
+                <div class="col-md-1"></div>
+            </div> <br>
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-3"><label for="">Specialization</label> <select id="dspecilization"
+                        class="form-control" required>
+                        <option value="">--select--</option>
+                        <option value="General">General</option>
+                        <option value="Gynecologist">Gynecologist</option>
+                        <option value="cardiologist">cardiologist</option>
+                        <option value="Neurologist">Neurologist</option>
+                        <option value="pediatrician">Pediatrician</option>
+                    </select></div>
+
+                <div class="col-md-3"><label for="">Schedule</label> <select id="dschedule" class="form-control"
+                        required>
+                        <option value="">select</option>
+                        <option value="mon,tue,wends">mon,tue,wends</option>
+                        <option value="thurs,fri,sat">thurs,fri,sat</option>
+                    </select><br></div>
+                <div class="col-md-3"><label for="">Timings</label> <select id="time" class="form-control" required>
+                        <option value="">--select--</option>
+                        <option value="10-5">10-1</option>
+                        <option value="10-5">10-5</option>
+                        <option value="1-5">1-5</option>
+
+                    </select>
+                </div>
+                <div class="col-md-1"></div>
+            </div><br>
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-3"><label for="">Address</label><textarea class="form-control"
+                        placeholder="enter your address" id="daddress" required></textarea></div>
+                <div class="col-md-3"><label for="">Hospital Names</label> <select id="hname" class="form-control"
+                        required>
+                        <option value="">--select--</option>
+                         
+                    </select></div>
+                <div class="col-md-3"><br>
+                    <button type="submit" id="submit" class="btn btn-success">Register</button>
+                    &nbsp;&nbsp;&nbsp;<button type="reset" id="cancel" class="btn btn-danger">Cancel</button>
+                </div>
+                <div class="col-md-1"></div>
+            </div><br><br>
+
+        </center>
+    </form>
+</body>
+
+</html>
+<script>
+
+    function performAjax(httpMethod, url, params) {
+        const myPromise = new Promise((resolve, reject) => {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve(this.responseText);
+                }
+                if (this.status == 500) {
+                    reject({ error: true, message: "ServerError" });
+                }
+                if (this.status == 404) {
+                    reject({ error: true, message: "Resource not found" });
+                }
+            };
+            xhttp.open(httpMethod, url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            params ? xhttp.send(params) : xhttp.send();
+        });
+        return myPromise;
+    }
+    function loadData() {
+        const getFilesPromise = performAjax("GET", "http://localhost:4000/Admin/viewhospitals");
+        getFilesPromise
+            .then((HosList) => {
+                showHospitalNames(HosList);
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+
+    function showHospitalNames(data) {
+        const names = JSON.parse(data);
+        let hname = document.getElementById("hname");
+        for (let i = 0; i < names.length; i++) {
+            let option1 = document.createElement("OPTION");
+            option1.innerHTML = names[i].hospitalname;
+            option1.value = names[i].hospitalname;
+            hname.options.add(option1);
+        }
+    }
+
+    function doctorRegistration() {
+        event.preventDefault();
+        const dname = document.getElementById("dname").value;
+        const dfathername = document.getElementById("dfathername").value;
+        const demailid = document.getElementById("demailid").value;
+        const dpassword = document.getElementById("dpassword").value;
+        const ddoj = document.getElementById("ddoj").value;
+        const dspecilization = document.getElementById("dspecilization").value;
+        const dphone = document.getElementById("dphone").value;
+        const dschedule = document.getElementById("dschedule").value;
+        const Timings = document.getElementById("time").value;
+        const daddress = document.getElementById("daddress").value;
+        const HospitalName = document.getElementById("hname").value;
+        const addDoctorPromise = performAjax(
+            "POST",
+            "http://localhost:4000/Doctor/doctor",
+            JSON.stringify({ dname, dfathername, demailid, dpassword, ddoj, dspecilization, dphone, dschedule, Timings, daddress, HospitalName })
+        );
+        addDoctorPromise
+            .then(newDoctorsList => {
+                alert("succefully added");
+                cancel();
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+
+    function cancel() {
+        event.preventDefault();
+        document.getElementById("dname").value = "";
+        document.getElementById("dfathername").value = "";
+        document.getElementById("demailid").value = "";
+        document.getElementById("dpassword").value = "";
+        document.getElementById("ddoj").value = "";
+        document.getElementById("dspecilization").value = "";
+        document.getElementById("dphone").value = "";
+        document.getElementById("dschedule").value = "";
+        document.getElementById("time").value = "";
+        document.getElementById("daddress").value = "";
+    }
+
+</script>

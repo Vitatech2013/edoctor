@@ -1,0 +1,235 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<html>
+<style>
+    .tablecss {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .tablecss td,
+    .tablecss th {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    .tablecss tr:nth-child(odd) {
+        background-color: #f2f2f2;
+    }
+
+    .tablecss tr:hover {
+        background-color: #ddd;
+    }
+
+    .tablecss th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: center;
+        background-color: lavender;
+        color: black;
+        font-weight: bold;
+    }
+</style>
+
+<body onload="loaddoctors()">
+    <br>
+    <div class="row">
+        <div class="col-md-4"></div>
+        <div class="col-md-3"><label for="">Hospital Names</label> <select id="sname" class="form-control"
+                required>
+                <option value="">--select--</option>
+            </select></div>
+        <div class="col-md-2"><br>
+            <button type="submit" id="submit" class="btn btn-success" onclick="SearchDoctors()">Search</button>
+        </div>
+        <div class="col-md-3"></div>
+    </div><br><br>
+    <form onsubmit="appoinmentReg()">
+        <center>
+            <table id="doctorDetails" class="tablecss" style="width: 94%;"></table>
+        </center>
+
+        <body onload="loadData()">
+            <center>
+                <table id="files" class="tablecss" style="width:95%;"></table>
+            </center>
+
+            <div id="myModal" class="modal fade" role="dialog">
+                <div class="modal-dialog model-lg">
+
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                            <center>
+                                <h4 class="modal-title">Appoinment details</h4>
+                            </center>
+                        </div>
+                        <div class="modal-body">
+
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <input type="hidden" name="id" id="id" class="form-control" placeholder="enter name"
+                                        required>
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="">Name</label>
+                                </div>
+                                <div class="col-sm-3">
+                                    <input type="text" name="name" id="name" disabled="false" class="form-control"
+                                        placeholder="enter name" required>
+                                </div>
+                                <div class="col-sm-3"></div>
+                            </div><br>
+                            <div class="row">
+                                <div class="col-sm-3"></div>
+                                <div class="col-sm-3">
+                                    <label for="">Doctor Name</label>
+                                </div>
+                                <div class="col-sm-3">
+                                    <input type="text" name="dname" id="dname" disabled="false" class="form-control"
+                                        placeholder="enter doctor name" required>
+                                </div>
+                                <div class="col-sm-3"></div>
+                            </div><br>
+                            <div class="row">
+                                <div class="col-sm-3"></div>
+                                <div class="col-sm-3">
+                                    <label for="">Date</label>
+                                </div>
+                                <div class="col-sm-3">
+                                    <input type="date" name="date" id="date" class="form-control" required>
+                                </div>
+                                <div class="col-sm-3"></div>
+                            </div><br>
+                            <div class="row">
+                                <div class="col-sm-3">
+                                    <input type="hidden" name="hname" id="hname" disabled="false" class="form-control">
+                                </div>
+                                <div class="col-sm-3">
+                                    <label for="">Time</label>
+                                </div>
+                                <div class="col-sm-3">
+                                    <input type="time" name="time" id="time" class="form-control"
+                                        placeholder="enter time" required>
+                                </div>
+                                <div class="col-sm-3"></div>
+                            </div><br>
+                            <div class="row">
+                                <div class="col-sm-3"></div>
+                                <div class="col-sm-6">
+                                    <button type="submit" id="submit1"
+                                        class="btn btn-success btn ">Submit</button>&nbsp;&nbsp;
+                                </div>
+                                <div class="col-sm-3"></div>
+                            </div><br><br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </form>
+</body>
+
+</html>
+
+<script>
+    let records = [];
+
+    function performAjax(httpMethod, url, params) {
+        const myPromise = new Promise((resolve, reject) => {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve(this.responseText);
+                }
+                if (this.status == 500) {
+                    reject({ error: true, message: "ServerError" });
+                }
+                if (this.status == 404) {
+                    reject({ error: true, message: "Resource not found" });
+                }
+            };
+            xhttp.open(httpMethod, url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            params ? xhttp.send(params) : xhttp.send();
+        });
+        return myPromise;
+    }
+
+    function loaddoctors() {
+        const getFilesPromise = performAjax("GET", "http://localhost:4000/Admin/viewdoctors");
+        getFilesPromise
+            .then((DocList) => {
+                showSpecilizationNames(DocList);
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+
+    }
+    function showSpecilizationNames(data) {
+        const names = JSON.parse(data);
+        let sname = document.getElementById("sname");
+        for (let i = 0; i < names.length; i++) {
+            let option1 = document.createElement("OPTION");
+            option1.innerHTML = names[i].dspecilization;
+            option1.value = names[i].dspecilization;
+            sname.options.add(option1);
+        }
+    }
+function SearchDoctors(){
+    event.preventDefault();
+        const dspecilization = document.getElementById("sname").value;
+      
+        const searchPromise = performAjax(
+            "GET",
+            `http://localhost:4000/Doctor/searchDoctors?dspecilization=${dspecilization}`
+        );
+        searchPromise
+        .then((response) => {            
+            const data = response;
+            showDoctorDetails(data);            
+        })
+        .catch(err => {
+            alert(err.message);
+        })
+}
+
+    function showDoctorDetails(data) {
+        records = JSON.parse(data);
+        const tableHeader = `<thead><tr><th>sno</th><th>Name</th><th>Emailid</th><th>Doj</th><th>Specilization</th><th>Phone</th><th>Schedule</th><th>Timings</th><th>Hospital</th><th>Book Appoinment</th></thead>`;
+        let tableRows = records.map((employy, index) => {
+            return `<tr><td>${index + 1}</td><td>${employy.dname}</td><td>${employy.demailid}</td><td>${employy.ddoj}</td><td>${employy.dspecilization}</td><td>${employy.dphone}</td><td>${employy.dschedule}</td><td>${employy.Timings}</td><td>${employy.HospitalName}</td><td><button  id='${employy._id}' data-toggle="modal" data-target="#myModal"  onclick="ShowPopUp('${employy.dname}','${employy.HospitalName}')">Appointment</button></td></tr>`;
+        });
+        document.getElementById("doctorDetails").innerHTML = `${tableHeader}${tableRows.join('')}`;
+
+    }
+    function ShowPopUp(dname,HospitalName){
+       document.getElementById("dname").value=dname;
+       document.getElementById("hname").value=HospitalName;
+       const pname = sessionStorage.getItem("name");
+       document.getElementById("name").value=pname;
+    }
+
+    function appoinmentReg() {
+        const id = document.getElementById("id").value;
+        const name = document.getElementById("name").value;
+        const dname = document.getElementById("dname").value;
+        const date = document.getElementById("date").value;
+        const time = document.getElementById("time").value;
+       const HospitalName=document.getElementById("hname").value;
+        const addAppoinmentPromise = performAjax(
+            "POST", "http://localhost:4000/Patient/appoinment",
+            JSON.stringify({ name, dname, date, time,HospitalName })
+        );
+        addAppoinmentPromise
+            .then(newAppoinmentList => {
+                alert("succefully added");
+            })
+            .catch(err => {
+                alert(err.message);
+            });
+    }
+</script>

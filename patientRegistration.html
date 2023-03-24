@@ -1,0 +1,133 @@
+<html>
+<title>pat registration</title>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+<style>
+    .form-control {
+        border: 1px solid black;
+        border-radius: 10px;
+    }
+</style>
+
+<body onload="loadData()"><br><br>
+<form onsubmit="submitpatinet()">
+    <center>
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4"><label style="color:purple"><strong><u>PATIENT REGISTRATION</u></strong></label></div>
+            <div class="col-md-4"></div>
+        </div><br>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-3"><label for="">Enter name</label><input type="text" class="form-control" name="name"
+                    id="name" placeholder="enter name"required></div>
+            <div class="col-md-3"><label for="">Father name</label><input type="text" class="form-control"
+                    id="fathername" name="fname" placeholder="enter father name"required></div>
+            <div class="col-md-3"><label for="">Email id</label><input type="email" class="form-control" name="email id"
+                    id="emailid" placeholder="enter email id" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"></div>
+        </div><br>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-3"><label for="">Password</label><input type="Password" class="form-control"required
+                    id="password" name="password"></div>
+            <div class="col-md-3"><label for="">Date of birth</label><input type="date" id="dob" class="form-control"required
+                    name="dob">
+            </div>
+            <div class="col-md-3"><label for="">Phone number</label><input type="text" class="form-control" id="phone"
+                    placeholder="enter your phone number"maxlength="10" required pattern="[6-9]{1}[0-9]{9}"></div>
+            <div class="col-md-1"></div>
+        </div> <br>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-3"><label for="">Gender</label><br><input type="radio" name="gender" id="female"
+                    value="Female" required>Female
+                <input type="radio" name="gender" id="male" value="Male" required>Male</div>
+            <div class="col-md-3"><label for="">Address</label><textarea class="form-control" id="address" required></textarea></div>
+                
+                <div class="col-md-4"></div>
+            </div><br>
+
+        </div><br>
+
+        <div class="row">
+            <div class="col-md-5"></div>
+            <div class="col-md-1"><button type="submit" 
+                    class="btn btn-success">Register</button></div>&nbsp;
+            <div class="col-md-1"><button type="reset"  class="btn btn-danger">Cancel</button></div>
+            <div class="col-md-5"></div>
+        </div><br><br>
+
+    </center>
+	</form>
+</body>
+
+</html>
+<script>
+
+    function performAjax(httpMethod, url, params) {
+        const myPromise = new Promise((resolve, reject) => {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve(this.responseText);
+                }
+                if (this.status == 500) {
+                    reject({ error: true, message: "ServerError" });
+                }
+                if (this.status == 404) {
+                    reject({ error: true, message: "Resource not found" });
+                }
+            };
+            xhttp.open(httpMethod, url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            params ? xhttp.send(params) : xhttp.send();
+        });
+        return myPromise;
+    }
+   
+    function submitpatinet() {
+        event.preventDefault();
+        const name = document.getElementById("name").value;
+        const fathername = document.getElementById("fathername").value;
+        const emailid = document.getElementById("emailid").value;
+        const password = document.getElementById("password").value;
+        const dob = document.getElementById("dob").value;
+        const phone = document.getElementById("phone").value;
+        const gender = document.getElementById("male").checked ? "Male" : "Female";
+        const address = document.getElementById("address").value;
+       
+        const addpatientPromise = performAjax(
+            "POST",
+            "http://localhost:4000/Patient/patient",
+            JSON.stringify({ name, fathername, emailid, password, dob, phone, gender, address })
+        );
+        addpatientPromise
+            .then(addpatientPromise => {
+                alert("Successfully Registered");
+                cancel();
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+
+    function cancel() {
+        document.getElementById("name").value = "";
+        document.getElementById("fathername").value = "";
+        document.getElementById("emailid").value = "";
+        document.getElementById("password").value = "";
+        document.getElementById("dob").value = "";
+        document.getElementById("phone").value = "";
+        document.getElementById("male").checked = "";
+        document.getElementById("address").value = "";
+
+    }
+
+</script>

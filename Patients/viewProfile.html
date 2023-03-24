@@ -1,0 +1,131 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<br>
+<html>
+
+<body onload="getData()">
+<form onsubmit="updatePatient()">
+
+    <center>
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4"><label style="color:purple"><strong><u>PATIENT PROFILE</u></strong></label></div>
+            <div class="col-md-4"></div>
+        </div><br>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-3"><label for=""></label><input type="hidden" class="form-control" id="id" name="id">
+            </div>
+            <div class="col-md-7"></div>
+        </div><br><br>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-3"><label for="">name</label><input type="text" class="form-control" disabled="false" name="name"
+                    id="name" placeholder="enter name"required></div>
+            <div class="col-md-3"><label for="">Father name</label><input type="text" class="form-control"
+                    id="fathername" name="fname" placeholder="enter father name"required></div>
+            <div class="col-md-3"><label for="">Email id</label><input type="email" class="form-control" name="email id"
+                    id="emailid" placeholder="enter email id"required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"></div>
+        </div><br>
+        <div class="row">
+            <div class="col-md-2"></div>
+
+            <div class="col-md-3"><label for="">Date of birth</label><input type="date" id="dob" class="form-control"
+                    name="dob"required>
+            </div>
+            <div class="col-md-3"><label for="">Phone number</label><input type="text" class="form-control" id="phone"
+                    placeholder="enter your phone number"maxlength="10" required pattern="[6-9]{1}[0-9]{9}"></div>
+            <div class="col-md-3"><label for="">Gender</label><br><input type="radio" name="gender" id="female"
+                    value="Female" checked="true">Female
+                <input type="radio" name="gender" id="male" value="Male" >Male</div>
+        </div> <br>
+        <div class="row">
+            <div class="col-md-5"></div>
+
+            <div class="col-md-3"><label for="">Address</label><textarea class="form-control" id="address"required></textarea>
+                <div class="col-md-4"></div>
+            </div><br>
+
+        </div><br>
+
+        <div class="row">
+            <div class="col-md-5"></div>
+            <div class="col-md-2"><button type="submit" 
+                    class="btn btn-success">Update</button></div>
+            <div class="col-md-5"></div>
+        </div><br><br>
+
+    </center>
+	</form>
+</body>
+<script>
+    const name = sessionStorage.getItem("name");
+    function performAjax(httpMethod, url, params) {
+        const myPromise = new Promise((resolve, reject) => {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve(this.responseText);
+                }
+                if (this.status == 500) {
+                    reject({ error: true, message: "ServerError" });
+                }
+                if (this.status == 404) {
+                    reject({ error: true, message: "Resource not found" });
+                }
+            };
+            xhttp.open(httpMethod, url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            params ? xhttp.send(params) : xhttp.send();
+        });
+        return myPromise;
+    }
+
+    function getData() {
+        document.getElementById("name").value = name;
+        const getUsersPromise = performAjax("GET", `http://localhost:4000/Patient/patientprofile?name=${name}`);
+        getUsersPromise
+            .then((data) => {
+                const users = [data].map(record => {
+                    return JSON.parse(record);
+
+                });
+                users.map(rec => {
+                    document.getElementById("name").value = rec.name;
+                    document.getElementById("fathername").value = rec.fathername;
+                    document.getElementById("emailid").value = rec.emailid;
+                    document.getElementById("dob").value = rec.dob;
+                    document.getElementById("phone").value = rec.phone;
+                    document.getElementById("male").checked = rec.male;
+                    document.getElementById("address").value = rec.address;
+                });
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+
+    function updatePatient() {
+        const id = document.getElementById("id").value;
+        const name = document.getElementById("name").value;
+        const fathername = document.getElementById("fathername").value;
+        const emailid = document.getElementById("emailid").value;
+        const dob = document.getElementById("dob").value;
+        const phone = document.getElementById("phone").value;
+        const gender = document.getElementById("male").checked ? "Male" : "Female";
+        const address = document.getElementById("address").value;
+        const getUpdatePromise = performAjax(
+            "PUT",
+            `http://localhost:4000/Admin/updatePatient/${sessionStorage.getItem("id")}`,
+            JSON.stringify({ name, fathername, emailid, dob, phone, gender, address })
+        );
+        getUpdatePromise
+            .then((updatePromise) => {
+                alert('Details Updated');
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+</script>

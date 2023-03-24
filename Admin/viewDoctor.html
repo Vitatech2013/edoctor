@@ -1,0 +1,304 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<html>
+<style>
+    .tablecss {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .tablecss td,
+    .tablecss th {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    .tablecss tr:nth-child(odd) {
+        background-color: #f2f2f2;
+    }
+
+    .tablecss tr:hover {
+        background-color: #ddd;
+    }
+
+    .tablecss th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: center;
+        background-color: lavender;
+        color: black;
+        font-weight: bold;
+    }
+</style>
+
+<body onload="loaddoctors()">
+<form onsubmit="Update()">
+    <center>
+        <table id="doctorDetails" class="tablecss" style="width: 94%;"></table>
+    </center>
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <center>
+                        <h4 class="modal-title">Doctor details</h4>
+                    </center>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-3">
+                            <label for=""></label>
+                        </div>
+                        <div class="col-sm-3">
+                            <input type="hidden" name="id" id="id" class="form-control" placeholder="enter name"
+                                required>
+                        </div>
+                        <div class="col-sm-3"></div>
+                    </div><br>
+                    <div class="row">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-3">
+                            <label for="">Name</label>
+                        </div>
+                        <div class="col-sm-3">
+                            <input type="text" name="dname" id="dname" class="form-control" placeholder="enter name"
+                                required>
+                        </div>
+                        <div class="col-sm-3"></div>
+                    </div><br>
+                    <div class="row">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-3">
+                            <label for="">fathername</label>
+                        </div>
+                        <div class="col-sm-3">
+                            <input type="text" name="dfathername" id="dfathername" class="form-control"
+                                placeholder="enter doctor name" required>
+                        </div>
+                        <div class="col-sm-3"></div>
+                    </div><br>
+                    <div class="row">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-3">
+                            <label for="">Date</label>
+                        </div>
+                        <div class="col-sm-3">
+                            <input type="text" name="demailid" id="demailid" class="form-control" required>
+                        </div>
+                        <div class="col-sm-3"></div>
+                    </div><br>
+                    <div class="row">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-3">
+                            <label for="">doj</label>
+                        </div>
+                        <div class="col-sm-3">
+                            <input type="text" name="ddoj" id="ddoj" class="form-control" placeholder="enter time"
+                                required>
+                        </div>
+                        <div class="col-sm-3"></div>
+                    </div><br>
+                    <div class="row">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-3">
+                            <label for="">specilization</label>
+                        </div>
+                        <div class="col-sm-3">
+                            <select id="dspecilization" class="form-control"required>
+							  <option value="">--select--</option>
+                                <option value="General">General</option>
+                                <option value="Gynecologist">Gynecologist</option>
+                                <option value="cardiologist">cardiologist</option>
+                                <option value="Neurologist">Neurologist</option>
+                                <option value="pediatrician">Pediatrician</option>
+                            </select></div>
+                        <div class="col-sm-3"></div>
+                    </div><br>
+                    <div class="row">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-3">
+                            <label for="">phone</label>
+                        </div>
+                        <div class="col-sm-3">
+                            <input type="text" name="dphone" id="dphone" class="form-control" placeholder="enter time"
+                                maxlength="10" required pattern="[6-9]{1}[0-9]{9}">
+                        </div>
+                        <div class="col-sm-3"></div>
+                    </div><br>
+                    <div class="row">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-3">
+                            <label for="">schedule</label>
+                        </div>
+                        <div class="col-sm-3">
+                            <input type="text" name="dschedule" id="dschedule" class="form-control"
+                                 required>
+                        </div>
+                        <div class="col-sm-3"></div>
+                    </div><br>
+                    <div class="row">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-3">
+                            <label for="">Timings</label>
+                        </div><div class="col-sm-3">
+                            <select id="time" class="form-control" required>
+                                <option value="">--select--</option>
+                                <option value="10-5">10-1</option>
+                                <option value="10-5">10-5</option>
+                                <option value="1-5">1-5</option></select>
+                        </div>
+                        <div class="col-sm-3"></div>
+                    </div>
+                   <br>
+                    <br>
+                    <div class="row">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-3">
+                            <label for="">address</label>
+                        </div>
+                        <div class="col-sm-3">
+                            <textarea class="form-control" placeholder="enter your address" id="daddress"required></textarea>
+
+                        </div>
+                        <div class="col-sm-3"></div>
+                    </div><br>
+                    
+                    <div class="row">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-6">
+                            <button type="submit" id="submit1" class="btn btn-success btn "
+                                >Submit</button>&nbsp;&nbsp;
+                        </div>
+                        <div class="col-sm-3"></div>
+                    </div><br><br>
+                </div>
+            </div>
+        </div>
+    </div>
+	</form>
+</body>
+
+</html>
+
+<script>
+    let records = [];
+
+    function performAjax(httpMethod, url, params) {
+        const myPromise = new Promise((resolve, reject) => {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve(this.responseText);
+                }
+                if (this.status == 500) {
+                    reject({ error: true, message: "ServerError" });
+                }
+                if (this.status == 404) {
+                    reject({ error: true, message: "Resource not found" });
+                }
+            };
+            xhttp.open(httpMethod, url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            params ? xhttp.send(params) : xhttp.send();
+        });
+        return myPromise;
+    }
+
+    function loaddoctors() {
+        const getFilesPromise = performAjax("GET", "http://localhost:4000/Admin/viewdoctors");
+        getFilesPromise
+            .then((DocList) => {
+                showDoctorDetails(DocList);
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+
+    function showDoctorDetails(data) {
+        records = JSON.parse(data);
+        const tableHeader = `<thead><tr><th>sno</th><th>dname</th><th>dfathername</th><th>emailid</th><th>ddoj</th><th>dspecilization</th><th>dphone</th><th>dschedule</th><th>Timings</th><th>daddress</th><th>Hospital</th><th>Actions</th></thead>`;
+        let tableRows = records.map((employy, index) => {
+            let editButton = `<a class="fa fa-edit" id="${employy._id}"   style="color:blue; font-size:22px;" onclick="editfile(event)" data-toggle="modal" data-target="#myModal"></a>`;
+            let deleteButton = `<a id="${employy._id}" class="fa fa-trash" style="color:blue; font-size:22px;" onclick="deleteFile(event)"></a>`;
+            return `<tr><td>${index + 1}</td><td>${employy.dname}</td><td>${employy.dfathername}</td><td>${employy.demailid}</td><td>${employy.ddoj}</td><td>${employy.dspecilization}</td><td>${employy.dphone}</td><td>${employy.dschedule}</td><td>${employy.Timings}</td><td>${employy.daddress}</td><td>${employy.HospitalName}</td><td align="center">${editButton}&nbsp;&nbsp;&nbsp;${deleteButton}</td></tr>`;
+        });
+        document.getElementById("doctorDetails").innerHTML = `${tableHeader}${tableRows.join('')}`;
+
+    }
+
+    function editfile(event) {
+        event.preventDefault();
+        let editRecord;
+        records.map(rec => {
+            if (rec._id === event.target.id) {
+                editRecord = rec;
+            }
+        });
+        if (editRecord !== undefined) {
+            document.getElementById("id").value = editRecord._id;
+            document.getElementById("dname").value = editRecord.dname;
+            document.getElementById("dfathername").value = editRecord.dfathername;
+            document.getElementById("demailid").value = editRecord.demailid;
+            document.getElementById("ddoj").value = editRecord.ddoj;
+            document.getElementById("dspecilization").value = editRecord.dspecilization;
+            document.getElementById("dphone").value = editRecord.dphone;
+            document.getElementById("dschedule").value = editRecord.dschedule;
+            document.getElementById("time").value = editRecord.Timings;
+            document.getElementById("daddress").value = editRecord.daddress;
+           
+        }
+
+        else {
+            alert(" not Found");
+        }
+    }
+
+    function Update() {
+        const id = document.getElementById("id").value;
+        const dname = document.getElementById("dname").value;
+        const dfathername = document.getElementById("dfathername").value;
+        const demailid = document.getElementById("demailid").value;
+        const ddoj = document.getElementById("ddoj").value;
+        const dspecilization = document.getElementById("dspecilization").value;
+        const dphone = document.getElementById("dphone").value;
+        const dschedule = document.getElementById("dschedule").value;
+        const Timings = document.getElementById("time").value;
+        const daddress = document.getElementById("daddress").value;
+      
+        const getOrgPromise = performAjax(
+            "PUT",
+            `http://localhost:4000/Admin/${id}`,
+            JSON.stringify({ dname, dfathername, demailid, ddoj, dspecilization, dphone, dschedule,Timings, daddress})
+        );
+        getOrgPromise
+            .then((OrgPromise) => {
+                alert('Update Successfully Completed');
+
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+
+    function deleteFile(event) {
+        const deletePromise = performAjax("DELETE", `http://localhost:4000/Admin/deletedoctor/${event.target.id}`);
+        deletePromise
+            .then((remainingDoctors) => {
+                alert("do you want to delete this file");
+                loaddoctors()
+               
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+
+</script>

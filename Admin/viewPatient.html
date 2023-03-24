@@ -1,0 +1,254 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<html>
+<style>
+    .tablecss {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .tablecss td,
+    .tablecss th {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    .tablecss tr:nth-child(odd) {
+        background-color: #f2f2f2;
+    }
+
+    .tablecss tr:hover {
+        background-color: #ddd;
+    }
+
+    .tablecss th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: center;
+        background-color: lavender;
+        color: black;
+        font-weight: bold;
+    }
+</style>
+
+<body onload="loadData()">
+<form onsubmit="Update()">
+    <center>
+        <table id="patientDetails" class="tablecss" style="width: 94%;"></table>
+    </center>
+
+
+    <div id="myModal" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <center>
+                        <h4 class="modal-title">Patient details</h4>
+                    </center>
+                </div>
+                <div class="modal-body">
+
+                    <div class="row">
+                        <div class="col-sm-3"><input type="hidden" name="id" id="id" class="form-control"
+                                placeholder="enter name" required></div>
+                        <div class="col-sm-3">
+                            <label for="">name</label>
+                        </div>
+                        <div class="col-sm-3">
+                            <input type="text" name="name" id="name" class="form-control" placeholder="enter name"
+                                required>
+                        </div>
+                        <div class="col-sm-3"></div>
+                    </div><br>
+                    <div class="row">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-3">
+                            <label for="">fathername</label>
+                        </div>
+                        <div class="col-sm-3">
+                            <input type="text" name="fathername" id="fathername" class="form-control"
+                                placeholder="enter fathername" required>
+                        </div>
+                        <div class="col-sm-3"></div>
+                    </div><br>
+                    <div class="row">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-3">
+                            <label for="">emailid</label>
+                        </div>
+                        <div class="col-sm-3">
+                            <input type="text" name="emailid" id="emailid" class="form-control"
+                                placeholder="enter ur emailid" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"required>
+                        </div>
+                        <div class="col-sm-3"></div>
+                    </div><br>
+                    <div class="row">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-3">
+                            <label for="">dob</label>
+                        </div>
+                        <div class="col-sm-3">
+                            <input type="date" name="dob" id="dob" class="form-control" placeholder="enter date"
+                                required>
+                        </div>
+                        <div class="col-sm-3"></div>
+                    </div><br>
+                    <div class="row">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-3">
+                            <label for="">phone</label>
+                        </div>
+                        <div class="col-sm-3">
+                            <input type="text" name="phone" id="phone" class="form-control"
+                                placeholder="enter ur number" maxlength="10" required pattern="[6-9]{1}[0-9]{9}"></div>
+                        <div class="col-sm-3"></div>
+                    </div><br>
+                    <div class="row">
+                        <div class="col-sm-3"></div>
+                        <div class="col-md-3"><label for="">Gender</label></div>
+                        <div class="col-md-2"><input type="radio" name="gender" id="female" value="Female"
+                                checked="true">Female
+                            <input type="radio" name="gender" id="male" value="Male">Male</div>
+
+                        <div class="col-sm-4"></div>
+                    </div><br>
+                    <div class="row">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-3">
+                            <label for="">address</label>
+                        </div>
+                        <div class="col-sm-3">
+                            <textarea class="form-control" placeholder="enter your address" id="address"required></textarea>
+
+                        </div>
+                        <div class="col-sm-3"></div>
+                    </div><br>
+                    <div class="row">
+                        <div class="col-sm-3"></div>
+                        <div class="col-sm-6">
+                            <button type="submit"  id="submit1" class="btn btn-success btn "
+                                >Submit</button>&nbsp;&nbsp;
+                        </div>
+                        <div class="col-sm-3"></div>
+                    </div><br><br>
+                </div>
+            </div>
+        </div>
+    </div>
+	</form>
+</body>
+
+</html>
+<script>
+    let records = [];
+
+    function performAjax(httpMethod, url, params) {
+        const myPromise = new Promise((resolve, reject) => {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve(this.responseText);
+                }
+                if (this.status == 500) {
+                    reject({ error: true, message: "ServerError" });
+                }
+                if (this.status == 404) {
+                    reject({ error: true, message: "Resource not found" });
+                }
+            };
+            xhttp.open(httpMethod, url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            params ? xhttp.send(params) : xhttp.send();
+        });
+        return myPromise;
+    }
+
+    function loadData() {
+        const getFilesPromise = performAjax("GET", "http://localhost:4000/Admin/viewpatients");
+        getFilesPromise
+            .then((PatientList) => {
+                showPatientDetails(PatientList);
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+
+    function showPatientDetails(data) {
+        records = JSON.parse(data);
+        const tableHeader = `<thead><tr><th>sno</th><th>name</th><th>fathername</th><th>emailid</th><th>dob</th><th>phone</th><th>gender</th><th>address</th><th><Actions></th></thead>`;
+        let tableRows = records.map((employy, index) => {
+            let editButton = `<a class="fa fa-edit" id="${employy._id}"   style="color:blue; font-size:22px;" onclick="editfile(event)" data-toggle="modal" data-target="#myModal"></a>`;
+            let deleteButton = `<a id="${employy._id}" class="fa fa-trash" style="color:blue; font-size:22px;" onclick="deleteFile(event)"></a>`;
+            return `<tr><td>${index + 1}</td><td>${employy.name}</td><td>${employy.fathername}</td><td>${employy.emailid}</td><td>${employy.dob}</td><td>${employy.phone}</td><td>${employy.gender}</td><td>${employy.address}</td><td align="center">${editButton}&nbsp;&nbsp;&nbsp;${deleteButton}</td></tr>`;
+        });
+        document.getElementById("patientDetails").innerHTML = `${tableHeader}${tableRows.join('')}`;
+
+    }
+
+    function editfile(event) {
+        event.preventDefault();
+        let editRecord;
+        records.map(rec => {
+            if (rec._id === event.target.id) {
+                editRecord = rec;
+            }
+        });
+        if (editRecord !== undefined) {
+            document.getElementById("id").value = editRecord._id;
+            document.getElementById("name").value = editRecord.name;
+            document.getElementById("fathername").value = editRecord.fathername;
+            document.getElementById("emailid").value = editRecord.emailid;
+            document.getElementById("dob").value = editRecord.dob;
+            document.getElementById("phone").value = editRecord.phone;
+            document.getElementById("male").checked = editRecord.male;
+            document.getElementById("address").value = editRecord.address;
+        }
+
+        else {
+            alert(" not Found");
+        }
+    }
+
+    function deleteFile(event) {
+        const deletePromise = performAjax("DELETE", `http://localhost:4000/Admin/deletepatient/${event.target.id}`);
+        deletePromise
+            .then((remainingPatient) => {
+                alert("do you want to delete this file");
+                loadData();
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+
+    function Update() {
+        const id = document.getElementById("id").value;
+        const name = document.getElementById("name").value;
+        const fathername = document.getElementById("fathername").value;
+        const emailid = document.getElementById("emailid").value;
+        const dob = document.getElementById("dob").value;
+        const phone = document.getElementById("phone").value;
+        const gender = document.getElementById("male").checked ? "Male" : "Female";
+        const address = document.getElementById("address").value;
+        console.log(id, name, fathername, emailid, dob, phone, gender, address);
+        const getOrgPromise = performAjax(
+            "PUT",
+            `http://localhost:4000/Admin/updatePatient/${id}`,
+            JSON.stringify({ name, fathername, emailid, dob, phone, gender, address })
+        );
+        getOrgPromise
+            .then((patientPromise) => {
+                alert('Update Successfully Completed');
+                loadData();
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+</script>

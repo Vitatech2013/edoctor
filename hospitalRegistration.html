@@ -1,0 +1,143 @@
+<html>
+<title>hos registration</title>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+<style>
+    .form-control {
+        border: 1px solid black;
+        border-radius: 10px;
+    }
+</style>
+
+<body><br><br>
+<form onsubmit="submitHospital()">
+    <center>
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4"><label style="color:purple"><strong><u>HOSPITAL REGISTRATION</u></strong></label>
+            </div>
+            <div class="col-md-4"></div>
+        </div><br><br>
+        <div class="row">
+            <div class="col-md-2"></div>
+
+            <div class="col-md-3"><label for="">hospital name</label><input type="text" class="form-control" name="name"
+                    id="hospitalname" placeholder="enter hospital name" required></div>
+            <div class="col-md-3"><label for="">Estd-year</label><input type="date" class="form-control" id="estyear"
+                    name="estyear"required>
+            </div>
+            <div class="col-md-3"><label for="">Email id</label><input type="text" class="form-control" name="email"
+                    id="emailid" placeholder="enter email id" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"></div>
+            <div class="col-md-1"></div>
+        </div><br>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-3"><label for="">Password</label><input type="Password" class="form-control"
+                    id="password" name="password"required></div>
+            <div class="col-md-3"><label for="">Phone number</label><input type="text" class="form-control"
+                    placeholder="enter your ph number" id="phoneno"maxlength="10" required pattern="[6-9]{1}[0-9]{9}"></div>
+            <div class="col-md-3"><label>District</label><select id="district" class="form-control"required>
+                    <option value="">--select--</option>
+                    <option value="karimnagar">karimnagar</option>
+                    <option value="peddapalli">peddapalli</option>
+                </select></div>
+            <div class="col-md-1"></div>
+        </div> <br>
+        <div class="row">
+            <div class="col-md-2"></div>
+
+            <div class="col-md-3"><label>State</label><select id="country" class="form-control"required>
+                    <option value="">--select--</option>
+                    <option value="telangana">-------telangana------</option>
+                    <option value="andra">-------andra------</option>
+                </select></div>
+            <div class="col-md-3"><label>Country:</label><select id="state" class="form-control"required>
+                    <option value="">--select--</option>
+                    <option value="india">-------india------</option>
+                    <option value="usa">-------usa------</option>
+                </select></div>
+            <div class="col-md-3"><label for="">Address</label><textarea id="address" class="form-control"
+                    placeholder="enter your address" id="address"required></textarea>
+            </div>
+            <div class="col-md-1"></div>
+        </div><br><br>
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-2"><button type="submit" 
+                    class="btn btn-success">Register</button></div>&nbsp;
+            <div class="col-md-2"><button type="reset" class="btn btn-danger">Cancel</button></div>
+            <div class="col-md-4"></div>
+        </div><br><br>
+
+    </center>
+	</form>
+</body>
+
+</html>
+<script>
+
+
+    function performAjax(httpMethod, url, params) {
+        const myPromise = new Promise((resolve, reject) => {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve(this.responseText);
+                }
+                if (this.status == 500) {
+                    reject({ error: true, message: "ServerError" });
+                }
+                if (this.status == 404) {
+                    reject({ error: true, message: "Resource not found" });
+                }
+            };
+            xhttp.open(httpMethod, url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            params ? xhttp.send(params) : xhttp.send();
+        });
+        return myPromise;
+    }
+
+    function submitHospital() {
+        const hospitalname = document.getElementById("hospitalname").value;
+        const estyear = document.getElementById("estyear").value;
+        const emailid = document.getElementById("emailid").value;
+        const password = document.getElementById("password").value;
+        const phoneno = document.getElementById("phoneno").value;
+        const district = document.getElementById("district").value;
+        const country = document.getElementById("country").value;
+        const state = document.getElementById("state").value;
+        const address = document.getElementById("address").value;
+        const addhospitalPromise = performAjax(
+            "POST",
+            "http://localhost:4000/Hospital/hospital",
+            JSON.stringify({ hospitalname, estyear, emailid, emailid, password, phoneno, district, country, state, address })
+        );
+        addhospitalPromise
+            .then(addhospitalPromise => {
+                alert("Successfully Registered");
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+
+    function cancel() {
+        document.getElementById("hospitalname").value = "";
+        document.getElementById("estyear").value = "";
+        document.getElementById("emailid").value = "";
+        document.getElementById("password").value = "";
+        document.getElementById("phoneno").value = "";
+        document.getElementById("district").value = "";
+        document.getElementById("country").value = "";
+        document.getElementById("state").value = "";
+        document.getElementById("address").value = "";
+    }
+</script>

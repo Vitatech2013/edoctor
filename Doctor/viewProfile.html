@@ -1,0 +1,151 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<br>
+<html>
+
+<body onload="getData()">
+<form onsubmit="updateDoctor()">
+
+    <center>
+        <div class="row">
+            <div class="col-md-4"></div>
+            <div class="col-md-4"><label style="color:purple"><strong><u>Doctor Profile</u></strong></label></div>
+            <div class="col-md-4"></div>
+        </div><br>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-3"><label for=""></label><input type="hidden" class="form-control" name="id" id="id">
+            </div>
+            <div class="col-md-7"></div>
+        </div><br><br>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-3"><label for="">Enter name</label><input type="text" disabled="false" class="form-control" name="dname"
+                    id="dname" placeholder="enter name"required></div>
+            <div class="col-md-3"><label for="">Father name</label><input type="text" class="form-control"
+                    name="dfathername" id="dfathername" placeholder="enter father name"required></div>
+            <div class="col-md-3"><label for="">Phone number</label><input type="text" class="form-control"
+                    placeholder="enter your phone number" id="dphone" maxlength="10" required pattern="[6-9]{1}[0-9]{9}"></div>
+        </div><br>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-3"><label for="">Email id</label><input type="text" class="form-control" name="demailid"
+                    id="demailid" placeholder="enter email id"required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"></div>
+            <div class="col-md-3"><label for="">Date of Joining</label><input type="date" class="form-control"
+                    name="date" id="ddoj"required>
+            </div>
+            <div class="col-md-3"><label for="">Specialization</label> <select id="dspecilization" class="form-control"required>
+                    <option value="">--select--</option>
+					<option value="General">General</option>
+                    <option value="Gynecologist">Gynecologist</option>
+                    <option value="cardiologist">cardiologist</option>
+                    <option value="Neurologist">Neurologist</option>
+                    <option value="pediatrician">Pediatrician</option>
+                </select></div>
+        </div>
+        <div class="col-md-1"></div>
+        </div> <br>
+        <div class="row">
+            <div class="col-md-2"></div>
+            <div class="col-md-3"><label for="">Schedule</label> <select id="dschedule" class="form-control"required>
+			       <option value="">--select--</option>
+                    <option value="mon,tue,wends">mon,tue,wends</option>
+                    <option value="thurs,fri,sat">thurs,fri,sat</option>
+                </select><br></div>
+            <div class="col-md-3"><label for="">Address</label><textarea class="form-control"
+                    placeholder="enter your address" id="daddress"required></textarea>
+            </div>
+            <div class="col-md-3">  <label for="">Timings</label> <select id="time" class="form-control"required>
+                <option value="">--select--</option>
+                <option value="10-5">10-1</option>
+                <option value="10-5">10-5</option>
+                <option value="1-5">1-5</option></select>
+            </div>
+            <div class="col-md-1"></div>
+        </div><br>
+        <div class="row">
+            <div class="col-md-5"></div>
+            <div class="col-md-2"><button type="submit" id="submit" data-dismiss="modal" 
+                    class="btn btn-success">Update</button></div>
+            <div class="col-md-5"></div>
+        </div><br><br>
+
+    </center>
+</form>
+</body>
+<script>
+    const dname = sessionStorage.getItem("dname");
+    function performAjax(httpMethod, url, params) {
+        const myPromise = new Promise((resolve, reject) => {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve(this.responseText);
+                }
+                if (this.status == 500) {
+                    reject({ error: true, message: "ServerError" });
+                }
+                if (this.status == 404) {
+                    reject({ error: true, message: "Resource not found" });
+                }
+            };
+            xhttp.open(httpMethod, url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            params ? xhttp.send(params) : xhttp.send();
+        });
+        return myPromise;
+    }
+
+    function getData() {
+        document.getElementById("dname").value = dname;
+        const getUsersPromise = performAjax("GET", `http://localhost:4000/Doctor/doctorprofile?dname=${dname}`);
+        getUsersPromise
+            .then((data) => {
+                const users = [data].map(record => {
+                    return JSON.parse(record);
+
+                });
+                users.map(rec => {
+                    document.getElementById("dname").value = rec.dname;
+                    document.getElementById("dfathername").value = rec.dfathername;
+                    document.getElementById("demailid").value = rec.demailid;
+                    document.getElementById("ddoj").value = rec.ddoj;
+                    document.getElementById("dspecilization").value = rec.dspecilization;
+                    document.getElementById("dphone").value = rec.dphone;
+                    document.getElementById("dschedule").value = rec.dschedule;
+                    document.getElementById("time").value = rec.Timings;
+                    document.getElementById("daddress").value = rec.daddress;
+                });
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+
+    function updateDoctor() {
+        event.preventDefault();
+        const id = document.getElementById("id").value;
+        const dname = document.getElementById("dname").value;
+        const dfathername = document.getElementById("dfathername").value;
+        const demailid = document.getElementById("demailid").value;
+        const ddoj = document.getElementById("ddoj").value;
+        const dspecilization = document.getElementById("dspecilization").value;
+        const dphone = document.getElementById("dphone").value;
+        const dschedule = document.getElementById("dschedule").value;
+        const Timings = document.getElementById("time").value;
+        const daddress = document.getElementById("daddress").value;
+        const getUpdatePromise = performAjax(
+            "PUT",
+            `http://localhost:4000/Admin/${sessionStorage.getItem("id")}`,
+            JSON.stringify({ dname, dfathername, demailid, ddoj, dspecilization, dphone, dschedule,Timings, daddress })
+        );
+        getUpdatePromise
+            .then((updatePromise) => {
+                alert('Details Updated');
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+</script>
